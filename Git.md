@@ -16,9 +16,9 @@ git commit -m " "  这里的信息应当采用规范前缀、祈使句、避免�
 | perf:     | 性能优化                               |
 
 ```bash
-git commit -m "feature: Add user profile page"
-git commit -m "feature(api): Add support for user password reset"
-git commit -m "feature(auth): Implement JWT authentication"
+git commit -m "feat: Add user profile page"
+git commit -m "feat(api): Add support for user password reset"
+git commit -m "feat(auth): Implement JWT authentication"
 
 git commit -m "fix: Resolve login issue on mobile"
 

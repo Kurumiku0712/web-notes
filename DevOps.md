@@ -123,6 +123,12 @@ create bucket called as `stable-diffusion-percy`
 
 #### 4: create environment variables in lambda
 
+![image-20250216134925098](D:\Notes\web-notes\assets\image-20250216134925098.png)
+
+Copy the Model Name: stable-diffusion-2-1-011604
+
+Then go to Lambda function and add Environment variables
+
 ```
 Environment variables (2)
 
@@ -130,9 +136,11 @@ The environment variables below are encrypted at rest with the default Lambda se
 Key
 
 Value
-AWS_SM_EP	jumpstart-example-infer-model-txt2img-s-2023-02-16-01-51-11-187
-OUT_S3_BUCKET_NAME	testbucket-rupesh
+AWS_SM_EP	stable-diffusion-2-1-011604
+OUT_S3_BUCKET_NAME	stable-diffusion-percy
 ```
+
+![image-20250216135307742](D:\Notes\web-notes\assets\image-20250216135307742.png)
 
 #### 5: Then add below code:
 
