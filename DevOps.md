@@ -219,8 +219,27 @@ def lambda_handler(event, context):
 
 #### 6: Add below 2 layers in lambda 
 
-1. Add `AWSLambda-Python37-SciPy1x` layer for `numpy`
-2. Add `Matplotlib` layer
+1. Download Python 3.12
+
+2. Download packages:
+
+```
+PS D:\Projects\genAI-studio\amplify-react-stabledapp\backend\aws_lambda_layer\python\lib\python3.12\site-packages> pip install numpy matplotlib -t D:\Projects\genAI-studio\amplify-react-stabledapp\backend\aws_lambda_layer\python\lib\python3.12\site-packages
+```
+
+3. Go to Lambda - Layers
+
+![image-20250216150706341](D:\Notes\web-notes\assets\image-20250216150706341.png)
+
+4. Go to Lambda Fcuntion - Add a layer
+
+5. 1
+
+6. 
+
+7. 
+
+
 
 #### 7: Increase the Timeout for lambda
 
