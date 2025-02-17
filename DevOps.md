@@ -219,25 +219,13 @@ def lambda_handler(event, context):
 
 #### 6: Add below 2 layers in lambda 
 
-1. Download Python 3.12
+Add AWSSDKPandas to resovle numpy error
 
-2. Download packages:
+![image-20250216154446825](D:\Notes\web-notes\assets\image-20250216154446825.png)
 
-```
-PS D:\Projects\genAI-studio\amplify-react-stabledapp\backend\aws_lambda_layer\python\lib\python3.12\site-packages> pip install numpy matplotlib -t D:\Projects\genAI-studio\amplify-react-stabledapp\backend\aws_lambda_layer\python\lib\python3.12\site-packages
-```
+Add layer to resovle matplotlib error (download matplotlib locally and make a .zip file)
 
-3. Go to Lambda - Layers
-
-![image-20250216150706341](D:\Notes\web-notes\assets\image-20250216150706341.png)
-
-4. Go to Lambda Fcuntion - Add a layer
-
-5. 1
-
-6. 
-
-7. 
+Maybe due to the low network, could not create new layer 
 
 
 
