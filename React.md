@@ -176,3 +176,299 @@ const theme = createTheme(themeSettings(mode));
 
 useMemo() 使得只有在 `mode` 变化时 **才会重新计算 `theme`**，否则会返回缓存的 `theme`
 
+
+
+## Deploy
+
+Render
+
+web service: 
+
+npm start or node index.js
+
+For environment variables: NODE_VERSION=20
+
+For web access, add these IPs to mongodb network access
+
+![image-20250218150254856](D:\Notes\web-notes\assets\image-20250218150254856.png)
+
+Check
+
+![image-20250218150350844](D:\Notes\web-notes\assets\image-20250218150350844.png)
+
+![image-20250218150446505](D:\Notes\web-notes\assets\image-20250218150446505.png)
+
+
+
+For static site: ensure the right github repo, ensure .env is not in repo
+
+ensure the environment variable spelling `VITE_BASE_UR`
+
+ensure the backend url https://react-dashboard-server-gjun.onrender.com/ with / in the end
+
+check
+
+![image-20250218152902768](D:\Notes\web-notes\assets\image-20250218152902768.png)
+
+https://react-dashboard-ztid.onrender.com/
+
+
+
+## CI/CD
+
+On Render, set auto-deploy to no, then get
+
+Deploy Hook
+
+Your private URL to trigger a deploy for this server. Remember to keep this a secret.
+
+https://api.render.com/deploy/srv-cuq0g2ogph6c73ctdkm0?key=smprF25XbEw
+
+GitHub > Settings > Secrets and variables > Actions
+
+Add a new Repository secret
+
+RENDER_FRONTEND_HOOK
+
+create .github/workflows/deploy.yml
+
+```yml
+name: Deploy Frontend to Render
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Lint & Tests
+        run: |
+          npm run lint
+          npm test
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Deploy to Render
+        run: curl -X POST ${{ secrets.RENDER_FRONTEND_HOOK }}
+```
+
+error: name: Run Lint & Tests
+
+npm install eslint --save-dev
+
+npx eslint --init
+
+add  in package.json
+
+```json
+  "type": "module",
+
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "test": "echo \"No test specified\" && exit 0"
+  }
+```
+
+即使暂时没有测试文件，也可以用 `echo "No test specified"` 让 CI/CD 通过
+
+npm install eslint-plugin-react-hooks --save-dev
+
+npm install eslint-plugin-react-refresh --save-dev
+
+adjust eslint.config.js file
+
+rules
+
+```js
+      "no-unused-vars": "off",
+      "react/prop-types": "off",
+
+```
+
+npx eslint src
+
+![image-20250219103045772](D:\Notes\web-notes\assets\image-20250219103045772.png)
+
+![image-20250219103058697](D:\Notes\web-notes\assets\image-20250219103058697.png)
+
+## Jest
+
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom babel-jest
+
+npm install --save-dev jest-environment-jsdom
+
+npm install --save-dev @babel/preset-react @babel/preset-env babel-jest
+
+Jest 默认不支持 ES 模块，因此需要额外的配置
+
+在项目根目录下创建 `jest.config.js`，添加以下内容：
+
+```js
+export default {
+  testEnvironment: "jsdom",
+  transform: {
+    "^.+\\.jsx?$": "babel-jest",
+  },
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "\\.(jpg|jpeg|png|gif|webp|svg)$": "<rootDir>/__mocks__/fileMock.js", // let Jest ignore image files
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy", // let Jest ignore CSS files
+  },
+};
+```
+
+`testEnvironment: "jsdom"`：Jest 默认运行在 Node.js 环境，但 React 组件依赖浏览器，所以我们需要 `jsdom` 来模拟浏览器环境
+
+`moduleNameMapper`：用于忽略 CSS、SCSS 这类静态资源文件，以免 Jest 解析时报错
+
+adjust package.json
+
+```
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "test": "jest --ci"
+  }
+```
+
+create babel.config.cjs
+
+```js
+module.exports = {
+  presets: ["@babel/preset-env", "@babel/preset-react"],
+};
+
+```
+
+在 `src/components/__tests__/Header.test.js`
+
+```js
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import Header from "../Header";
+
+describe("Header Component", () => {
+  test("renders the title and subtitle", () => {
+    render(<Header title="Dashboard" subtitle="Welcome back!" />);
+
+    // check if the title is rendered correctly 
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Welcome back!")).toBeInTheDocument();
+  });
+
+  test("renders with correct styles", () => {
+    render(<Header title="Test Title" subtitle="Test Subtitle" />);
+
+    const titleElement = screen.getByText("Test Title");
+    const subtitleElement = screen.getByText("Test Subtitle");
+
+    expect(titleElement).toHaveStyle("font-weight: 700");
+    // ensure the rendering of subtitle 
+    expect(subtitleElement).toBeInTheDocument();
+  });
+});
+
+```
+
+npm test
+
+![image-20250219110234556](D:\Notes\web-notes\assets\image-20250219110234556.png)
+
+success!
+
+but fail when CI/CD
+
+```
+/home/runner/work/react-dashboard/react-dashboard/src/components/__tests__/Header.test.js
+   6:1  error  'describe' is not defined  no-undef
+   7:3  error  'test' is not defined      no-undef
+  11:5  error  'expect' is not defined    no-undef
+  12:5  error  'expect' is not defined    no-undef
+  15:3  error  'test' is not defined      no-undef
+  21:5  error  'expect' is not defined    no-undef
+  23:5  error  'expect' is not defined    no-undef
+
+✖ 7 problems (7 errors, 0 warnings)
+```
+
+npm install --save-dev eslint-plugin-jest
+
+update eslint.config.js
+
+```js
+import js from "@eslint/js";
+import globals from "globals";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import jest from "eslint-plugin-jest";
+
+export default [
+  { ignores: ["dist"] },
+  {
+    files: ["**/*.{js,jsx}"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jest,
+      },
+      parserOptions: {
+        ecmaVersion: "latest",
+        ecmaFeatures: { jsx: true },
+        sourceType: "module",
+      },
+    },
+    settings: { react: { version: "18.3" } },
+    plugins: {
+      react,
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+      jest,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...react.configs.recommended.rules,
+      ...react.configs["jsx-runtime"].rules,
+      ...reactHooks.configs.recommended.rules,
+      ...jest.configs.recommended.rules,
+
+      "no-unused-vars": "off",
+      "react/prop-types": "off",
+
+      "react/jsx-no-target-blank": "off",
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
+    },
+  },
+];
+
+```
+
+npm test
+
+commit, push
+
+![image-20250219111205479](D:\Notes\web-notes\assets\image-20250219111205479.png)
+
+![image-20250219111214237](D:\Notes\web-notes\assets\image-20250219111214237.png)
