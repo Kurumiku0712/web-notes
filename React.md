@@ -612,11 +612,42 @@ p是padding即内边距
 
 
 
+## Responsive Design
 
+**Tailwind CSS 常用断点**
+
+| 断点名称 | 类名前缀 | 最小宽度（px） | 适用设备                         |
+| -------- | -------- | -------------- | -------------------------------- |
+| `sm`     | `sm:`    | `640px`        | **小屏幕**（大部分手机）         |
+| `md`     | `md:`    | `768px`        | **中等屏幕**（平板）             |
+| `lg`     | `lg:`    | `1024px`       | **大屏幕**（小型笔记本、桌面端） |
+| `xl`     | `xl:`    | `1280px`       | **超大屏幕**（大显示器、高清屏） |
+| `2xl`    | `2xl:`   | `1536px`       | **超宽屏**（超高分辨率设备）     |
+
+
+
+`md:pl-24` 是 **Tailwind CSS** 提供的 **响应式类**，它的作用是 **在屏幕宽度达到 `md`（medium, 768px）时，应用 `pl-24`**
+
+**防止 Sidebar 覆盖内容**：通常 Dashboard 侧边栏 (`Sidebar`) 在大屏幕上是固定的，内容区需要一个 `padding-left` 来让出空间
+
+**适配不同设备**：
+
+- **在小屏幕上（< 768px）** → 没有 `pl-24`，内容 **紧贴左侧**
+- **在大屏幕上（≥ 768px）** → `pl-24` 让出 `96px` 的左侧空间，避免 Sidebar 覆盖
+
+`md:pl-24`、`lg:w-1/2` 等 Tailwind 响应式类相当于手写 `@media` 规则，因此 **这就是响应式设计**，也是一种**移动设备兼容**的方法
 
 
 
 # NextJS
+
+由于nextjs会按照文件结构注册url
+
+我们用括号把不需要url的组件括起来
+
+比如 (components)
+
+
 
 # Inventory Management Dashboard
 
@@ -628,3 +659,51 @@ inventory-management
 
 yes except alias
 
+
+
+创建新的tsx快捷键
+tsrafce
+
+## Navbar and Sidebar
+
+在layout.tsx导入自定义的组件 `DashboardWrapper` 
+
+```tsx
+    <html lang="en">
+      <body className={inter.className}>
+        <DashboardWrapper>{children}</DashboardWrapper>
+      </body>
+    </html>
+```
+
+`children` 代表 **React 组件中的子组件**，是一个 **特殊的 props**，用于组件嵌套时 **渲染子组件的内容**
+
+该组件
+
+**包裹 `children`**，为 `Dashboard` 页面提供统一的结构
+
+**可以用于全局状态管理**（比如 `Redux`）
+
+**用于控制 Dashboard 相关的 UI 布局**（比如 `Sidebar`、`Header`）
+
+![image-20250220215829895](D:\Notes\web-notes\assets\image-20250220215829895.png)
+
+调整主要内容Dashboard的位置
+
+![image-20250220220039066](D:\Notes\web-notes\assets\image-20250220220039066.png)
+
+调整Sidebar和Navbar的位置
+
+![image-20250220221902407](D:\Notes\web-notes\assets\image-20250220221902407.png)
+
+现在专注于Navbar
+
+### Navbar
+
+看设计图，应当是用flex结构在两边各有一个子结构
+
+所以用 justify-between
+
+![image-20250220223716510](D:\Notes\web-notes\assets\image-20250220223716510.png)
+
+![image-20250220224746015](D:\Notes\web-notes\assets\image-20250220224746015.png)
