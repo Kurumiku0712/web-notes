@@ -472,3 +472,159 @@ commit, push
 ![image-20250219111205479](D:\Notes\web-notes\assets\image-20250219111205479.png)
 
 ![image-20250219111214237](D:\Notes\web-notes\assets\image-20250219111214237.png)
+
+
+
+# Tailwind CSS
+
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+@tailwind base; 它会引入 **normalize.css** 以及一些默认的全局样式，保证不同浏览器的默认样式一致
+
+@tailwind components; Tailwind 允许你通过 `@apply` 定义 **可复用的组件样式**，然后 `@tailwind components` 会加载它们
+
+例子
+
+```css
+@layer components {
+  .btn-primary {
+    @apply bg-blue-500 text-white px-4 py-2 rounded;
+  }
+}
+
+```
+
+这样就可以用自定义的组件效果
+
+```tsx
+<button className="btn-primary">Click Me</button>
+```
+
+@tailwind utilities; 例如 `p-4`（`padding: 1rem`）、`text-gray-500`（文本颜色灰色）等
+
+
+
+## box-sizing: border-box
+
+```css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+```
+
+**作用**：
+
+- 让所有元素的 `width` **包含 padding 和 border**，不会增加额外宽度。
+- **默认情况下**，CSS 计算 `width` 时不包含 `padding` 和 `border`，这样容易导致布局错乱。
+- 这个设置可以确保盒子模型更易于管理。
+
+```css
+.box {
+  width: 200px;
+  padding: 20px;
+  border: 5px solid red;
+}
+```
+
+**默认 `content-box` 模型**：最终 `box` 的宽度是 **200px + 20px + 20px + 5px + 5px = 250px**。
+
+**使用 `border-box`**：`width: 200px` 就是最终大小，不会超出。
+
+
+
+## Global Settings
+
+```css
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  @apply text-sm;
+  @apply bg-gray-500;
+  @apply text-gray-900;
+}
+```
+
+**作用**：
+
+- 确保 `html`、`body` 和 `#root` 组件占据整个视口（viewport）。
+- `#root` 是 React 项目的根元素，它需要充满整个页面，保证 `App` 组件能正确渲染。
+
+
+
+## Themes
+
+tailwind.config.ts
+
+我们使用 `tw-colors` (`createThemes`) 生成 **亮色主题（light）** 和 **暗色主题（dark）**
+
+**定义基础颜色**，即 `gray, red, blue` 等 Tailwind 预设颜色。
+
+**创建颜色映射规则**，让 `gray[50]` 变成 `gray[900]`，保证亮暗模式颜色反转。
+
+**封装 `generateThemeObject` 函数**，批量生成 `lightTheme` 和 `darkTheme`。
+
+**定义 `themes` 变量**，分别存储亮色和暗色模式的颜色方案。
+
+**配置 Tailwind**：
+
+- **使用 `darkMode: "class"`** 来切换暗色模式。
+- **注册 `createThemes(themes)` 插件** 让 Tailwind 识别 `light` 和 `dark` 主题
+
+
+
+## Classes
+
+**类的顺序** 并不影响渲染的结果，但按照一定的逻辑顺序书写可以提升代码的 **可读性** 和 **可维护性**
+
+**尺寸**：如 `h-*`、`w-*`、`p-*`、`m-*`，用于定义大小和边距
+
+**布局**：如 `flex`、`grid`、`block`，用于定义布局的基本结构
+
+**对齐类**：如 `justify-*`、`items-*`、`text-*`，用于元素对齐和内容排布
+
+**样式类最后**：如 `bg-*`、`text-*`、`border-*`，用于定义视觉样式
+
+**`div`** 是块级元素，默认宽度会填充其父容器 `<body>`，即视口宽度, 因此不需要显式地设置宽度
+
+```tsx
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-green-100 text-4xl font-bold text-blue-600">
+      hello
+    </main>
+```
+
+**`flex`** 将容器变为 Flexbox，激活子元素的主轴和交叉轴对齐能力
+
+**主轴（Main Axis）**：默认是水平的（从左到右） **交叉轴（Cross Axis）**：默认是垂直的（从上到下）
+
+**`justify-center`** 使主轴（水平）的子元素居中
+
+**`items-center`** 使交叉轴（垂直）的子元素居中
+
+p是padding即内边距
+
+
+
+
+
+
+
+# NextJS
+
+# Inventory Management Dashboard
+
+nvm use 20
+
+npx create-next-app@14.2.4 
+
+inventory-management
+
+yes except alias
+
