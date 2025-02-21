@@ -651,6 +651,8 @@ p是padding即内边距
 
 # Inventory Management Dashboard
 
+## Frontend
+
 nvm use 20
 
 npx create-next-app@14.2.4 
@@ -664,7 +666,7 @@ yes except alias
 创建新的tsx快捷键
 tsrafce
 
-## Navbar and Sidebar
+### Navbar and Sidebar
 
 在layout.tsx导入自定义的组件 `DashboardWrapper` 
 
@@ -696,14 +698,27 @@ tsrafce
 
 ![image-20250220221902407](D:\Notes\web-notes\assets\image-20250220221902407.png)
 
-现在专注于Navbar
-
-### Navbar
-
-看设计图，应当是用flex结构在两边各有一个子结构
+Navbar看设计图，应当是用flex结构在两边各有一个子结构
 
 所以用 justify-between
 
 ![image-20250220223716510](D:\Notes\web-notes\assets\image-20250220223716510.png)
 
 ![image-20250220224746015](D:\Notes\web-notes\assets\image-20250220224746015.png)
+
+### Redux
+
+npm i react-redux @reduxjs/toolkit redux-persist
+
+
+
+## Database
+
+旧密码
+
+
+
+
+
+## Backend
+
