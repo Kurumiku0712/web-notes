@@ -738,7 +738,7 @@ npm run seed
 
 # AWS
 
-![image-20250221160004439](D:\Notes\web-notes\assets\image-20250221160004439.png)
+![image-20250221210117082](D:\Notes\web-notes\assets\image-20250221210117082.png)
 
 **Virtual Private Cloud**
 
@@ -1089,3 +1089,99 @@ result:
 ![image-20250221205854479](D:\Notes\web-notes\assets\image-20250221205854479.png)
 
 ## Step4: Amplify
+
+create through guthub
+
+![image-20250221210249013](D:\Notes\web-notes\assets\image-20250221210249013.png)
+
+**Environment variables**
+
+NEXT_PUBLIC_API_BASE_URL
+
+the value based on ipv4 address: http://ipv4
+
+https://main.d1zvv01v2vt4p6.amplifyapp.com/
+
+console:
+
+![image-20250221210954122](D:\Notes\web-notes\assets\image-20250221210954122.png)
+
+result:
+
+![image-20250221210107578](D:\Notes\web-notes\assets\image-20250221210107578.png)
+
+## Step5: API Gateway
+
+![image-20250221211252931](D:\Notes\web-notes\assets\image-20250221211252931.png)
+
+**API name**: api-nextjs-dashboard
+
+![image-20250221211406787](D:\Notes\web-notes\assets\image-20250221211406787.png)
+
+![image-20250221211439672](D:\Notes\web-notes\assets\image-20250221211439672.png)
+
+
+
+![image-20250221211504967](D:\Notes\web-notes\assets\image-20250221211504967.png)
+
+invoke url
+
+https://zvmu9dnhfh.execute-api.ap-southeast-2.amazonaws.com/prod
+
+![image-20250221211625730](D:\Notes\web-notes\assets\image-20250221211625730.png)
+
+redeploy
+
+
+
+
+
+result:
+
+![image-20250221211826125](D:\Notes\web-notes\assets\image-20250221211826125.png)
+
+## Step6: S3
+
+create bucket: s3-nextjs-dashboard
+
+![image-20250221212335587](D:\Notes\web-notes\assets\image-20250221212335587.png)
+
+permission -> policy
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement":[
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::s3-nextjs-dashboard/*"
+        }
+    ]
+}
+```
+
+upload images
+
+go to client -> next.config.mjs
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "s3-nextjs-dashboard.s3.ap-southeast-2.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+```
+
