@@ -649,7 +649,9 @@ p是padding即内边距
 
 
 
-# Inventory Management Dashboard
+# NextJS Dashboard
+
+Inventory Management
 
 ## Frontend
 
@@ -722,3 +724,248 @@ npm i react-redux @reduxjs/toolkit redux-persist
 
 ## Backend
 
+npx prisma generate
+
+npx prisma migrate dev --name init
+
+```
+Your database is now in sync with your schema.
+```
+
+npm run seed
+
+
+
+# AWS
+
+![image-20250221160004439](D:\Notes\web-notes\assets\image-20250221160004439.png)
+
+**Virtual Private Cloud**
+
+prevent other access
+
+## Step1: VPC and Subnets
+
+![image-20250221185554553](D:\Notes\web-notes\assets\image-20250221185554553.png)
+
+**create subnets**
+
+![image-20250221190153972](D:\Notes\web-notes\assets\image-20250221190153972.png)
+
+![image-20250221190212214](D:\Notes\web-notes\assets\image-20250221190212214.png)
+
+The public subnet can be accessed from the client through **VPC Internet Gateway** 
+
+The private one can only be accessed inside VPC
+
+**Create VPC Internet Gateway** 
+
+name vpc-internet-gateway
+
+the attach to VPC
+
+result:
+
+![image-20250221190854150](D:\Notes\web-notes\assets\image-20250221190854150.png)
+
+**Create Route Table**
+
+public-route-table
+
+private-route-table
+
+**Edit subnet associations**
+
+![image-20250221191409692](D:\Notes\web-notes\assets\image-20250221191409692.png)
+
+public - public
+
+private - private
+
+
+
+**Add route**
+
+public-route-table
+
+Edit routes
+
+![image-20250221191705546](D:\Notes\web-notes\assets\image-20250221191705546.png)
+
+result:
+
+![image-20250221191805619](D:\Notes\web-notes\assets\image-20250221191805619.png)
+
+
+
+## Step2: EC2
+
+### 1. Connect to EC2 Instance
+
+**Launch an instance**
+
+ec2-nextjs-dashboard-backend
+
+![image-20250221193018181](D:\Notes\web-notes\assets\image-20250221193018181.png)
+
+![image-20250221193440010](D:\Notes\web-notes\assets\image-20250221193440010.png)
+
+then
+
+**connect to instance**
+
+![image-20250221193523880](D:\Notes\web-notes\assets\image-20250221193523880.png)
+
+we need to install nvm, node.js, git, pm2 (Production Process Manager for Node.js)
+
+
+
+### 2. Install nvm and Node.js
+
+- **Switch to superuser and install nvm:**
+
+```
+sudo su -
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+```
+
+- **Activate nvm:**
+
+```
+. ~/.nvm/nvm.sh
+```
+
+- **Install the latest version of Node.js using nvm:**
+
+```
+nvm install node
+```
+
+- **Verify that Node.js and npm are installed:**
+
+```
+node -v
+npm -v
+```
+
+![image-20250221194318159](D:\Notes\web-notes\assets\image-20250221194318159.png)
+
+### 3. Install Git
+
+- **Update the system and install Git:**
+
+```
+sudo yum update -y
+sudo yum install git -y
+```
+
+- **Check Git version:**
+
+```
+git --version
+```
+
+![image-20250221195053922](D:\Notes\web-notes\assets\image-20250221195053922.png)
+
+- **Clone your code repository from GitHub:**
+
+```
+git clone https://github.com/Kurumiku0712/nextjs-dashboard.git
+```
+
+- **Navigate to the directory and install packages:**
+
+```
+cd nextjs-dashboard
+cd server
+npm i
+npm run dev
+```
+
+![image-20250221195936230](D:\Notes\web-notes\assets\image-20250221195936230.png)
+
+- **Create Env File and Port 80:**![image-20250221200212129](D:\Notes\web-notes\assets\image-20250221200212129.png)
+
+```
+echo "PORT=80" > .env
+npm run dev
+```
+
+![image-20250221200300255](D:\Notes\web-notes\assets\image-20250221200300255.png)
+
+- copy the ipv4 from the instance details and paste it on browser
+
+![image-20250221200554541](D:\Notes\web-notes\assets\image-20250221200554541.png)
+
+- **Start the application:** (not executed)
+
+```
+npm start
+```
+
+### 4. Install pm2
+
+- **Install pm2 globally:**
+
+```
+npm i pm2 -g
+```
+
+- **Create a pm2 ecosystem configuration file (inside server directory):**
+
+```
+module.exports = { apps : [{ name: 'inventory-management', script: 'npm', args: 'run dev', env: { NODE_ENV: 'development', ENV_VAR1: 'environment-variable', } }], };
+```
+
+- **Modify the ecosystem file if necessary:**
+
+```
+nano ecosystem.config.js
+```
+
+- **Set pm2 to restart automatically on system reboot:**
+
+```
+sudo env PATH=$PATH:$(which node) $(which pm2) startup systemd -u $USER --hp $(eval echo ~$USER)
+```
+
+![image-20250221201319425](D:\Notes\web-notes\assets\image-20250221201319425.png)
+
+- **Start the application using the pm2 ecosystem configuration:**
+
+```
+pm2 start ecosystem.config.js
+pm2 status
+```
+
+- **Useful pm2 commands:**
+
+  - **Stop all processes:**
+
+  ```
+  pm2 stop all
+  ```
+
+  - **Delete all processes:**
+
+  ```
+  pm2 delete all
+  ```
+
+  - **Check status of processes:**
+
+  ```
+  pm2 status
+  ```
+
+  - **Monitor processes:**
+
+  ```
+  pm2 monit
+  ```
+
+![image-20250221201446210](D:\Notes\web-notes\assets\image-20250221201446210.png)
+
+result:
+
+![image-20250221201649195](D:\Notes\web-notes\assets\image-20250221201649195.png)
