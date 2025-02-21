@@ -969,3 +969,123 @@ pm2 status
 result:
 
 ![image-20250221201649195](D:\Notes\web-notes\assets\image-20250221201649195.png)
+
+## Step3: RDS
+
+Add one more subnet
+
+![image-20250221202144689](D:\Notes\web-notes\assets\image-20250221202144689.png)
+
+associate with route table
+
+![image-20250221202229986](D:\Notes\web-notes\assets\image-20250221202229986.png)
+
+
+
+**RDS** 
+
+subnet groups
+
+create DB subnet group
+
+name: rds-subnet-group
+
+![image-20250221202514442](D:\Notes\web-notes\assets\image-20250221202514442.png)
+
+then
+
+**Create database**
+
+standard -> PostgreSQL -> Free tier
+
+settings: rds-nextjs-dashboard
+
+Master password: the old one
+
+![image-20250221202936077](D:\Notes\web-notes\assets\image-20250221202936077.png)
+
+![image-20250221203025057](D:\Notes\web-notes\assets\image-20250221203025057.png)
+
+![image-20250221203042432](D:\Notes\web-notes\assets\image-20250221203042432.png)
+
+![image-20250221203312948](D:\Notes\web-notes\assets\image-20250221203312948.png)
+
+![image-20250221203839389](D:\Notes\web-notes\assets\image-20250221203839389.png)
+
+![image-20250221203901103](D:\Notes\web-notes\assets\image-20250221203901103.png)
+
+click the link on the Active
+
+**Edit inbound rules**
+
+![image-20250221204033786](D:\Notes\web-notes\assets\image-20250221204033786.png)
+
+databases
+
+![image-20250221204115477](D:\Notes\web-notes\assets\image-20250221204115477.png)
+
+copy endpoint  
+
+```
+rds-nextjs-dashboard.c1s48k0ma5xt.ap-southeast-2.rds.amazonaws.com
+```
+
+remember:
+
+DB name
+
+nextjs_dashboard
+
+and password
+
+
+
+go to EC2 instances
+
+connect, open the console
+
+```
+sudo su -
+ls
+cd nextjs-dashboard
+cd server
+nano .env
+```
+
+change 
+
+```
+DATABASE_URL="postgresql://postgres:ygy2000712.@localhost:5432/dashboard?schema=public"
+```
+
+to (be careful here, any detail error could cause fail)
+
+```
+DATABASE_URL="postgresql://postgres:ygy2000712.@rds-nextjs-dashboard.c1s48k0ma5xt.ap-southeast-2.rds.amazonaws.com/nextjs_dashboard?schema=public"
+```
+
+ctrl+o enter ctrl+x
+
+```
+pm2 status
+pm2 delete all
+npx prisma generate
+npx prisma migrate dev --name init
+npm run seed
+pm2 start ecosystem.config.js
+pm2 monit
+```
+
+![image-20250221205320902](D:\Notes\web-notes\assets\image-20250221205320902.png)
+
+![image-20250221205451901](D:\Notes\web-notes\assets\image-20250221205451901.png)
+
+ipv4/dashboard on browser
+
+![image-20250221205729025](D:\Notes\web-notes\assets\image-20250221205729025.png)
+
+result:
+
+![image-20250221205854479](D:\Notes\web-notes\assets\image-20250221205854479.png)
+
+## Step4: Amplify
