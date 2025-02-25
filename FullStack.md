@@ -4,6 +4,22 @@
 
 
 
+# AIBUILD Assignment
+
+
+
+
+
+# JavaScript
+
+**异步任务确实要等同步任务执行完毕后才执行。**
+
+**JavaScript 事件循环优先执行微任务（Promise）**，然后执行**宏任务（setTimeout 等）**。
+
+**`setTimeout` 不能严格控制执行顺序**，它的时间只是“最小等待时间”，可能因事件循环和主线程任务的执行情况而有所延迟。
+
+**多个 `setTimeout` 任务的顺序取决于定时器设定的时间和主线程的任务状态**。
+
 
 
 # React
@@ -79,6 +95,10 @@ create **Store**
 ```jsx
     const mode = useSelector((state) => state.global.mode);
 ```
+
+
+
+# Node.js (Express.js)
 
 
 
