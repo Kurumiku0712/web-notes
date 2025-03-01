@@ -1167,7 +1167,36 @@ export default Counter;
 
 
 
+# AIBUILD Info
 
+“I appreciate AIBUILD’s focus on innovation and collaboration, especially in **AI-driven web solutions**. I enjoy working in fast-growing, research-driven teams where I can continuously learn and contribute to scalable, intelligent web applications.”
+
+
+
+“I found the Otaro project particularly interesting, as it showcases how AI and AR/VR can enhance education. I’m excited about the opportunity to contribute to such AI-driven web solutions and help build engaging, intelligent interfaces.”
+
+
+
+“I saw that AIBUILD was recently **recognized by Google Cloud as a Scale Tier AI startup**. It’s exciting to see the company’s commitment to AI innovation being recognized on a global scale. I’d love to be part of a team driving this innovation forward.”
+
+
+
+Team collabration. typical workflow. 
+
+**关于技术方向**：
+
+- “How does AIBUILD approach the integration of AI models with web applications?”
+- “What technologies are primarily used in your AR/VR web development projects?”
+
+**关于团队和工作模式**：
+
+- “How does the web development team collaborate with the AI and AR/VR teams?”
+- “What’s the typical workflow for developing and deploying AI-powered web applications at AIBUILD?”
+
+**关于成长和学习**：
+
+- “**What technical challenges have been most rewarding for web developers in AIBUILD?**”
+- “Are there opportunities to contribute to AIBUILD’s AI/AR/VR research projects as a web developer?”
 
 
 
