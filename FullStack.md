@@ -185,16 +185,132 @@ SSR 可能遇到的卡点包括**服务器端缺少浏览器 API**（如 `window
 ### **相关面试问题**
 
 - **JWT 认证的原理？**
+
+**JSON Web Token (JWT)** 是一种无状态的身份认证机制，服务端签发 Token 给客户端，客户端每次请求时携带该 Token，服务端验证后返回资源，无需存储会话状态。
+
+
+
 - **如何安全地在前端存储 Token？**
+
+**短期 Token（如访问令牌）**：`Memory (内存)`（安全，页面刷新丢失）
+
+**长期 Token（如刷新令牌）**：`HttpOnly Cookie + Secure`（安全，防止 XSS）
+
+**避免 `localStorage` 存 Token**，因其容易被 XSS 攻击窃取
+
+
+
 - **Cookie、SessionStorage、LocalStorage 区别？**
+
+| 特性           | Cookie                    | LocalStorage             | SessionStorage                 |
+| -------------- | ------------------------- | ------------------------ | ------------------------------ |
+| **生命周期**   | 设定时间，默认 Session 级 | **永久存储**（手动清除） | **Session 级**（关闭页面清除） |
+| **大小限制**   | 4KB                       | 5MB                      | 5MB                            |
+| **作用域**     | **自动随请求发送**        | 仅在本域存取             | 仅在当前 Tab 存取              |
+| **是否跨页面** | ✅ 跨页面可用              | ✅ 跨页面可用             | ❌ 仅限当前页面                 |
+| **适用场景**   | **存 Token、身份验证**    | 长期存储配置数据         | **短期数据（如临时表单）**     |
+
+✅ **存 Token 时，推荐 `HttpOnly Cookie`，防止 XSS 窃取**
+
+
+
 - **如何在前端请求中传递 Cookie？**
+
+✅ **在 `fetch` 或 `axios` 请求中添加 `credentials` 选项**：
+
+```js
+fetch(url, { credentials: "include" })  // 允许跨域携带 Cookie
+axios.get(url, { withCredentials: true }) // 同理
+```
+
+**默认情况下，跨域请求不会携带 Cookie**，需服务端 **允许 `Access-Control-Allow-Credentials: true`**
+
+
+
 - **axios 有拦截器吗？它的作用是什么？**
+
+**请求拦截** (`request` interceptor)：在请求发送前 **添加 Token** 或 **修改请求头**
+
+**响应拦截** (`response` interceptor)：在响应返回前 **统一处理错误** 或 **自动刷新 Token**
+
+
+
 - **如何解决 CORS 问题？**
+
+CORS（跨域资源共享）**由服务端决定是否允许跨域请求**，前端无法直接解决。
+
+**服务端添加 CORS 头**（推荐）：
+
+```
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+```
+
+**前端代理**（适用于开发环境）：
+
+- Webpack/Vite 配置 `proxy`
+- Nginx 代理请求到同源 API
+
+
+
 - **如何防止 CSRF 攻击？**
+
+**最佳实践**：
+
+1. **使用 `SameSite=Strict` 或 `SameSite=Lax` 的 Cookie**
+2. Token 机制
+   - **在请求头中携带 `CSRF-Token`**
+   - **双重 Cookie 机制**（前端从 Cookie 读取 Token，放入 `headers`）
+3. **限制 `Referer` 和 `Origin`**
+4. **验证码（reCAPTCHA）**（适用于关键操作）
+
+
+
 - **Cookie 的应用场景？**
+
+✅ **主要用于**：
+
+- **用户身份认证**（存放 `Session ID` 或 `JWT`）
+- **网站偏好设置**（如 `语言、主题`）
+- **跨页面数据存储**（如购物车信息）
+
+📌 **最佳实践**：
+
+- **敏感数据存 `HttpOnly` Cookie**
+- **设置 `Secure` 防止非 HTTPS 传输**
+- **设置 `SameSite` 保护 CSRF**
+
+
+
 - **前端如何检查用户的登录状态？**
+
+✅ **常见方式**：
+
+1. Token 方式（JWT）
+   - 登录后返回 `JWT`
+   - 前端存储（Cookie / LocalStorage）
+   - 每次请求带 `Authorization: Bearer Token`
+2. Session 方式
+   - 登录后 `Set-Cookie: session_id=xxx`
+   - 访问受保护资源时，检查 `session_id`
+3. 调用 `/auth/check` API
+   - 每次页面加载时，前端请求 `/auth/check`
+   - 后端返回 `200`（已登录）或 `401`（未登录）
+
+
+
 - **跨域问题有哪些解决方案？**
-- **JSONP 的具体实现？**
+
+✅ **常见方案**：
+
+1. **CORS（推荐）**：后端配置 `Access-Control-Allow-Origin`
+2. **JSONP**（仅支持 `GET`）
+3. **反向代理**（Nginx、Webpack `devServer.proxy`）
+4. **NGINX + 同源策略**（配置 `proxy_pass`）
+
+
+
+
 
 ------
 
@@ -211,13 +327,88 @@ SSR 可能遇到的卡点包括**服务器端缺少浏览器 API**（如 `window
 ### **相关面试问题**
 
 - **前端如何使用 Docker 进行部署？**
+
+**使用 `Dockerfile` 构建前端应用**（如 React、Vue）并运行 Nginx 提供静态文件。
+
+**主要步骤**：`npm build → COPY dist → Nginx 运行`。
+
+**优势**：一致的环境、易于 CI/CD 自动化部署。
+
+
+
 - **前后端容器化的区别？**
+
+**前端容器化**：通常只需 **Nginx + 静态资源**（HTML, CSS, JS）。
+
+**后端容器化**：需要 **运行环境（Node.js, Java, Python）+ 依赖安装**，通常包含 **数据库、缓存（Redis）等服务**。
+
+**后端通常涉及多容器编排（Docker Compose / Kubernetes）**。
+
+
+
 - **Nginx 反向代理如何配置？**
+
+**反向代理作用**：前端请求转发到后端，解决 **跨域问题**。
+
+```nginx
+location /api/ {
+    proxy_pass http://backend:8080;
+}
+```
+
+**可以做负载均衡、缓存优化、静态资源托管**。
+
+
+
 - **如何利用 CI/CD 实现前端自动化部署？**
+
+**Git push 触发 CI/CD Pipeline** → **构建前端代码** → **打包 Docker 镜像** → **推送到服务器** → **自动部署**。
+
+**常用工具**：GitHub Actions, GitLab CI/CD, Jenkins。
+
+**自动化减少人为错误，提高部署效率**。
+
+
+
 - **Git rebase 和 merge 的区别？**
+
+**`merge`**：保留完整历史，合并后有**额外的 merge commit**，适合多人协作。
+
+**`rebase`**：将当前分支的提交 **“重新应用”** 到目标分支，不产生额外 commit，适用于 **保持 commit 记录整洁**。
+
+**`rebase` 更干净，`merge` 更安全**。
+
+
+
 - **如何用 Docker 实现本地开发环境与生产环境的一致性？**
+
+**使用 `Docker Compose`** 管理多个服务（前端、后端、数据库）。
+
+**相同 `Dockerfile` 适配**不同 `环境变量（dev/prod）`，保持环境一致。
+
+**解决“本地能跑，服务器出错”的问题**。
+
+
+
 - **如何让 Docker 容器间进行通信？**
+
+**使用 `Docker Network`** 创建一个**私有网络**，让容器间可以通过 `container_name` 互相访问。
+
+**Docker Compose 默认创建 bridge 网络**，服务可直接用 **`service_name`** 通信（如 `backend:8080`）。
+
+**避免使用 `localhost`，因为每个容器有独立网络环境**。
+
+
+
 - **如何优化 Docker 镜像体积？**
+
+**选择轻量级基础镜像**（如 `alpine` 代替 `ubuntu`）。
+
+**减少 `RUN` 层数，合并多个命令**，减少无用层。
+
+**使用 `.dockerignore` 排除 `node_modules`、`logs` 等不必要文件**。
+
+
 
 ------
 
@@ -249,6 +440,26 @@ SSR 可能遇到的卡点包括**服务器端缺少浏览器 API**（如 `window
 - **手写节流 & 防抖函数**
 - **V8 引擎的解析流程？**
 - **如何实现 Object 深拷贝？**
+
+浅拷贝问题
+
+```js
+const obj1 = { a: 1, b: { c: 2 } };
+const obj2 = { ...obj1 };  // 仅拷贝第一层
+
+obj2.b.c = 100;  // 修改 obj2 影响 obj1
+console.log(obj1.b.c); // 100 （仍然引用同一个对象）
+
+```
+
+深拷贝
+
+创建一个新的对象，所有嵌套对象都被复制，互不影响
+
+
+
+
+
 - **ES6 的解构赋值和扩展运算符的作用？**
 
 ------
@@ -267,8 +478,77 @@ SSR 可能遇到的卡点包括**服务器端缺少浏览器 API**（如 `window
 ### **相关面试问题**
 
 - **React Fiber 架构的核心优化点是什么？**
+
+> **React Fiber 是 React 16 引入的核心重构，提高 UI 渲染性能**
+
+✅ **核心优化点：**
+
+1. **可中断的渲染（Interruptible Rendering）**
+   - 传统的 React 递归渲染是 **同步** 的，Fiber 允许将渲染拆分为 **多个小任务**，可以暂停并恢复。
+2. **优先级调度（Time Slicing）**
+   - **关键 UI 任务优先执行**（如输入响应），低优先级任务（如动画、列表渲染）可推迟执行。
+3. **异步渲染（Concurrent Mode）**
+   - 允许 React 处理 **多任务并发**，如 `useTransition()` 控制渲染优先级。
+
+📌 **总结**：React Fiber 让 UI 渲染 **更流畅、不卡顿、可控优先级** 🚀
+
+
+
 - **为什么 hooks 不能在条件分支和循环中使用？**
+
+> **React 需要保证 hooks 的调用顺序一致，否则会导致状态错乱**
+
+✅ **核心原因：**
+
+1. **Hooks 调用顺序必须稳定**
+   - React **依赖调用顺序** 来匹配 `useState` / `useEffect` 等 hooks 的状态。
+   - 如果 hooks 在 **条件语句/循环** 里执行，调用顺序就可能改变，导致状态错误。
+2. **React 通过链表存 hooks 状态**
+   - **内部维护一个 hooks 数组**，如果跳过某个 hooks，索引会错位，状态将绑定错误的变量。
+
+✅ **正确用法：**
+
+- **Hooks 必须放在组件的顶层**，不在条件/循环中：
+
+```js
+if (someCondition) { 
+  useState(0); // ❌ 错误，可能导致 hooks 顺序错乱 
+}
+```
+
+📌 **总结**：**Hooks 规则** = **调用顺序不可变**，否则 React 无法正确管理状态 💡
+
+
+
 - **props 的底层实现原理？**
+
+> **props 是组件的 “输入”，用于从父组件向子组件传递数据**
+
+✅ **核心原理：**
+
+1. **React 组件是函数，props 是其参数**
+
+   - React 组件本质上是一个 **纯函数**，`props` 作为 **参数** 传入组件：
+
+   ```
+   function Button(props) {
+     return <button>{props.text}</button>;
+   }
+   ```
+
+2. **React 通过 `VDOM` 计算 `props` 变化**
+
+   - 当父组件 `render`，React **比较新旧 `props`**，判断子组件是否需要更新。
+   - `React.memo` 通过浅比较 `props` 进行 **性能优化**，避免不必要的重渲染。
+
+3. **`props` 传递是 **单向数据流
+
+   - React 遵循 **自上而下的单向数据流**，保证组件间的状态管理可预测。
+
+📌 **总结**：props 是 **React 组件的参数**，**通过 VDOM 计算变化**，**单向传递** 确保数据流可控 🚀
+
+
+
 - **React 为什么采用虚拟 DOM？**
 - **React.memo、useMemo、useCallback 的区别是什么？**
 - **如何在 React 中实现组件通信？**
@@ -290,11 +570,59 @@ SSR 可能遇到的卡点包括**服务器端缺少浏览器 API**（如 `window
 ### **相关面试问题**
 
 - **Flex:1 和 width:100% 的区别？**
+
+**`flex:1`** 让元素 **占满剩余空间**，同时可 **弹性收缩**。
+
+**`width:100%`** 让元素 **占满父容器的宽度**，但不会自动收缩。
+
+
+
 - **用 Flex 实现两栏布局**
+
+```css
+.container { display: flex; }
+.left { width: 200px; }
+.right { flex: 1; }
+```
+
+
+
 - **如何实现响应式布局？**
+
+**使用 `media queries`（媒体查询）**，根据屏幕宽度调整样式
+
+```css
+@media (max-width: 768px) { .container { flex-direction: column; } }
+```
+
+
+
 - **CSS 变量的作用？**
+
+CSS 变量 (`--var`) 允许全局定义 & 复用样式，便于主题切换和动态修改
+
+```css
+:root { --primary-color: blue; }
+button { background-color: var(--primary-color); }
+```
+
+
+
 - **CSS 选择器优先级如何计算？**
+
+**优先级规则：** `!important > 内联样式 > ID 选择器 > 类/伪类 > 元素选择器(标签div, p)`
+
+
+
 - **相邻节点选择器 `+`、`~` 的作用？**
+
+```
+h1 + p { color: red; }  /* 仅影响紧跟的 <p> */
+h1 ~ p { color: blue; } /* 影响所有后续 <p> */
+```
+
+
+
 - **如何用 CSS 实现五子棋的斜线布局？**
 
 ------
@@ -314,22 +642,423 @@ SSR 可能遇到的卡点包括**服务器端缺少浏览器 API**（如 `window
 ### **相关面试问题**
 
 - **HTTP 和 HTTPS 的区别？**
+
+**HTTP** 是 **明文传输**，不安全，容易被窃听和篡改。
+
+**HTTPS** 通过 **SSL/TLS 加密**，保证数据传输的 **安全性、完整性**，但略增加性能开销。
+
+
+
 - **跨域问题如何解决？**
+
+**CORS（推荐）**：服务端返回 `Access-Control-Allow-Origin` 允许跨域请求。
+
+**JSONP**（仅支持 `GET`）通过 `<script>` 远程执行回调函数。
+
+**反向代理**（Nginx, Webpack `proxy`）让请求看起来同源。
+
+
+
 - **TCP 粘包如何处理？**
+
+**TCP 传输时可能多个小包被合并（粘包）或大包被拆分（拆包）**。
+
+**解决方案**：
+
+- **定长协议**：每个包固定大小。
+- **特殊分隔符**（如 `\n`）标识包结束。
+- **包头 + 包体长度**，解析时先读包头获取长度，再读取完整数据。
+
+
+
 - **如何优化 DNS 解析速度？**
+
+**启用 DNS 预解析** (`<link rel="dns-prefetch" href="//example.com">`)。
+
+**使用 CDN** 让 DNS 解析更接近用户，提高命中率。
+
+**减少外部资源域名**，避免额外的 DNS 查询开销。
+
+**浏览器缓存 DNS 记录**，避免重复查询。
+
+
+
 - **浏览器的缓存策略是什么？**
+
+**强缓存（本地缓存）**：
+
+- `Cache-Control: max-age=3600`（指定多久后失效）。
+- `Expires: Wed, 21 Oct 2025 07:28:00 GMT`（过期时间）。
+
+**协商缓存（向服务器验证）**：
+
+- `ETag`（文件版本标识符），若一致则返回 `304 Not Modified`。
+- `Last-Modified`（文件最后修改时间）。
+
+
+
 - **如何衡量网站的网络性能？**
+
+**LCP**（最大内容渲染时间）：< 2.5s
+
+**CLS**（布局偏移稳定性）：< 0.1
+
+**TTFB**（首字节到达时间）：< 500ms
+
+**FID**（首次交互延迟）：< 100ms
+
+
+
 - **输入 URL 之后发生了什么？**
 
+**DNS 解析** → 获取服务器 IP 地址。
 
+**TCP 三次握手** → 建立连接。
+
+**发送 HTTP/HTTPS 请求**。
+
+**服务器处理请求**，返回 HTML/CSS/JS 资源。
+
+**浏览器解析 & 渲染**，执行 JS，加载资源。
+
+**页面渲染完成**，触发 `DOMContentLoaded` 和 `onload` 事件。
+
+
+
+1️⃣ **客户端 → 服务器（SYN）**
+
+- **客户端** 发送 `SYN`（同步请求）数据包，表示请求建立连接。
+- **标志位**：`SYN=1, SEQ=x`（随机初始序列号）。
+
+2️⃣ **服务器 → 客户端（SYN-ACK）**
+
+- **服务器** 收到 `SYN` 后，返回 `SYN-ACK` 确认请求。
+- **标志位**：`SYN=1, ACK=1, SEQ=y, ACK=x+1`。
+
+3️⃣ **客户端 → 服务器（ACK）**
+
+- **客户端** 再次发送 `ACK` 确认连接建立。
+- **标志位**：`ACK=1, SEQ=x+1, ACK=y+1`。
 
 
 
 ## 代码题
 
-var，const，let的代码输出题
+### var，const，let的代码输出题
 
-说一下对promise的理解, 如何判断一个对象是不是promise实例, 手写promise.all，promise.race
+三个方面，作用域，变量提升情况，可变性
+
+| 特性           | `var`                    | `let`                        | `const`               |
+| -------------- | ------------------------ | ---------------------------- | --------------------- |
+| **作用域**     | 函数作用域               | 块级作用域                   | 块级作用域            |
+| **变量提升**   | 提升（默认 `undefined`） | 提升但不初始化（暂时性死区） | 提升但不初始化（TDZ） |
+| **是否可修改** | ✅ 可以修改               | ✅ 可以修改                   | ❌ 不能重新赋值        |
+
+**🚀 重点：**
+
+- `var` 有变量提升，声明提前，**但默认 `undefined`**。`let` 和 `const` 也会提升，**但访问时若未初始化会报 "暂时性死区" 错误**。
+-  **`let` 和 `const` 具有块级作用域，出了 `{}` 就访问不到**。 **`var` 是函数作用域，在块 `{}` 内声明的变量仍然在全局可访问**。
+- `const` 变量不能重新赋值，但如果是对象或数组，**其属性是可以修改的**。
+
+```js
+function test() {
+    console.log(a); // ?
+    console.log(b); // ?
+    console.log(c); // ?
+
+    var a = 1;
+    let b = 2;
+    const c = 3;
+}
+
+test();
+
+```
+
+undefined
+ReferenceError: Cannot access 'b' before initialization
+ReferenceError: Cannot access 'c' before initialization
+
+
+
+### promise, 如何判断一个对象是不是promise实例, 手写promise.all，promise.race
+
+`Promise` 是 JavaScript 中用于 **处理异步操作** 的对象，它提供了一种更优雅的方式来避免 **回调地狱（Callback Hell）**，并提供了 `then/catch/finally` 方法来管理异步流程。
+
+在 JavaScript 早期，我们使用 **回调函数（callback）** 处理异步任务，比如：
+
+```js
+setTimeout(() => {
+    console.log("Step 1");
+    setTimeout(() => {
+        console.log("Step 2");
+        setTimeout(() => {
+            console.log("Step 3");
+        }, 1000);
+    }, 1000);
+}, 1000);
+```
+
+这段代码形成了 **回调地狱**（嵌套过深，难以维护）。
+
+使用 `Promise`，我们可以改写成：
+
+```js
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+delay(1000)
+    .then(() => {
+        console.log("Step 1");
+        return delay(1000);
+    })
+    .then(() => {
+        console.log("Step 2");
+        return delay(1000);
+    })
+    .then(() => {
+        console.log("Step 3");
+    });
+```
+
+这样代码变得 **扁平（flat）**，更清晰，易于管理。
+
+
+
+在 JavaScript 中，可以用以下方式判断：
+
+```js
+function isPromise(obj) {
+    return !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
+}
+
+// 测试
+console.log(isPromise(new Promise(() => {}))); // true
+console.log(isPromise({ then: function() {} })); // true (伪 Promise)
+console.log(isPromise(123)); // false
+console.log(isPromise(null)); // false
+console.log(isPromise({})); // false
+```
+
+- **Promise 必须是对象或函数**
+- **必须包含 `then` 方法**
+- 但仅仅有 `then` 可能只是一个 **thenable 对象**，未必是真正的 Promise
+
+
+
+实现 `promiseAll(promises)`，接收一个 promise 数组，返回一个新的 promise，只有当 **所有** promise 都成功解析时才会 resolve，任意一个失败则立即 reject。
+
+```js
+function promiseAll(promises) {
+  return new Promise((resolve, reject) => {
+    const results = [];
+    let completed = 0;
+      
+    if (promises.length === 0) resolve(results);
+      
+    promises.forEach((p, index) => {
+      Promise.resolve(p)
+        .then(value => {
+          results[index] = value;
+          completed++;
+          if (completed === promises.length) {
+            resolve(results);
+          }
+        })
+        .catch(error => reject(error));
+    });
+  });
+}
+
+```
+
+#### **解题思路**
+
+- **遍历 `promises`**：对每个 promise 绑定 `.then` 和 `.catch`。
+- **使用计数器** 记录已完成的 promise，所有都 resolve 后返回结果数组。
+- **任何 promise reject 立即终止**，防止继续执行。
+
+"`Promise.all` 并发执行多个异步任务，所有成功才 resolve，有一个失败就 reject。我通过计数器追踪已完成的 Promise，当计数等于输入数组长度时，返回所有结果。"
+
+```js
+function promiseAll(promises){
+    return new Promise((resolve, reject)=>{
+        const results = [];
+        let count = 0;
+        
+        if(promises.length===0){
+            resolve(results);
+        }
+        
+        promises.forEach((p, index)=>{
+            Promise.resolve(p)
+            .then((value)=>{
+                results[index]=value;
+                count++;
+                if(count===promises.length){
+                    resolve(results);
+                }
+            })
+            .catch((error)=>{reject(error)})
+        })
+    })
+}
+```
+
+
+
+Promise.race
+
+**只返回最早完成的 Promise 结果**
+
+**如果最先完成的是 `reject`，则直接 `reject`**
+
+```js
+function promiseRace(promises) {
+    return new Promise((resolve, reject) => {
+        for (let p of promises) {
+            Promise.resolve(p).then(resolve, reject);
+        }
+    });
+}
+```
+
+promiseAllSettled(promises)
+
+```js
+function promiseAllSettled(promises) {
+  return new Promise((resolve) => {
+    let results = [];
+    let count = 0;
+    let total = promises.length;
+
+    if (total === 0) {
+      resolve([]);
+      return;
+    }
+
+    promises.forEach((p, index) => {
+      Promise.resolve(p)
+        .then(value => {
+          results[index] = { status: "fulfilled", value };
+        })
+        .catch(reason => {
+          results[index] = { status: "rejected", reason };
+        })
+        .finally(() => {
+          count++;
+          if (count === total) resolve(results); // 全部完成后返回
+        });
+    });
+  });
+}
+
+```
+
+手写异步并行控制
+
+```js
+function asyncParallelLimit(tasks, limit) {
+  return new Promise((resolve, reject) => {
+    let results = new Array(tasks.length);
+    let running = 0;
+    let index = 0;
+
+    function runNext() {
+      if (index >= tasks.length) return;
+      const currentIndex = index;
+      const task = tasks[currentIndex];
+      index++;
+      running++;
+
+      Promise.resolve(task())
+        .then(res => results[currentIndex] = res)
+        .catch(err => results[currentIndex] = err)
+        .finally(() => {
+          running--;
+          if (results.length === tasks.length && running === 0) {
+            resolve(results);
+          } else {
+            runNext();
+          }
+        });
+    }
+
+    for (let i = 0; i < Math.min(limit, tasks.length); i++) {
+      runNext();
+    }
+  });
+}
+
+```
+
+
+
+以下代码的输出是什么？如何修正？
+
+```js
+var result = [];
+for (var i = 0; i < 3; i++) {
+  result[i] = function() {
+    console.log(i);
+  };
+}
+result[0](); result[1](); result[2]();
+```
+
+3, 3, 3
+
+`var` 是函数作用域，循环完成后 `i=3`，闭包共享 `i` 导致错误。用 `let`，它是块级作用域，每轮循环创建新 `i`，正确绑定当前值
+
+
+
+1. **闭包 = 函数 + 它能访问的变量**
+2. **函数执行完了，但闭包仍然记住创建时的变量**
+3. **可以用来模拟私有变量、保持状态、避免变量污染**
+4. **`var` 的循环问题可以用闭包解决**
+
+💡 **闭包本质：让变量活得比作用域长**！🎯
+
+
+
+### **实现防抖（Debounce）**
+
+考察点：高频输入优化、`setTimeout` 控制执行
+
+实现 `debounce(func, delay)`，保证 `func` 只有在 **停止调用 `delay` 时间后** 才执行。
+
+```js
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+```
+
+
+
+生成有效括号
+
+最长子数组和
+
+手写虚拟 DOM
+
+手写订阅发布模式
+
+JSONP 的具体实现
+
+lodash.get
+
+数组扁平化
+
+手写节流器
+
+大数相加 
+
+字符串匹配，大概是给一个str，再给一个exp，判断str能否被exp匹配（如"sss"可以被".*"匹配），应该是lc原题的感觉
 
 
 
@@ -337,9 +1066,11 @@ var，const，let的代码输出题
 
 介绍js事件循环机制（微任务宏任务）
 
-做题判断输出（还是考事件循环）
+先同步，再异步（先微任务比如Promise.then，再宏任务比如setTimeout）
 
-算法：旋转数组
+
+
+做题判断输出（还是考事件循环）
 
 JSONP 的具体实现
 
