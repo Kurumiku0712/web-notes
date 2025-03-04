@@ -38,6 +38,12 @@ const UserCard = React.memo(({ user }) => {
 });
 ```
 
+如果 `PostList` **重新渲染**（比如用户切换排序方式），**但帖子内容没有变化**，`React.memo` **可以阻止 `PostCard` 组件重新渲染**，提高性能
+
+
+
+
+
 2️⃣ **`useMemo`（缓存计算结果，避免重复计算）**
 
 - **适用场景：** 当某些计算**开销很大**，但 **依赖的数据没有变**时，可以用 `useMemo` **缓存计算结果**，避免重复执行计算。
@@ -49,6 +55,12 @@ const filteredUsers = useMemo(() => {
 }, [users, searchQuery]);
 ```
 
+
+
+
+
+
+
 3️⃣ **`useCallback`（缓存函数，避免子组件不必要的 re-render）**
 
 - **适用场景：** 当一个函数**被传递给子组件**，而**子组件用了 `React.memo`**，可以用 `useCallback` **缓存这个函数**，避免它在每次渲染时都生成新的引用，导致子组件重新渲染。
@@ -59,6 +71,18 @@ const handleClick = useCallback(() => {
   console.log("Clicked!");
 }, []);
 ```
+
+在**帖子点赞功能**（或评论提交功能）里，如果 `handleLike` 函数在每次 `PostList` 重新渲染时都被**重新创建**，会导致 `PostCard` 组件**误以为 props 发生了变化，从而触发不必要的重新渲染**。
+
+**`useCallback` 可以让 `handleLike` 在 `likes` 变化前保持不变**，避免 `PostCard` 组件不必要的重新渲染。
+
+**React.memo**: To prevent unnecessary re-renders of `PostCard`, which displayed individual food posts.
+
+**useCallback**: To optimize the `handleLike` function, ensuring that it wasn't re-created on every render, which helped prevent unnecessary updates to `PostCard`.
+
+**useMemo**: To efficiently sort posts by likes, reducing computational overhead by only re-sorting when needed. These optimizations significantly improved the website’s responsiveness and rendering performance."
+
+
 
 📌 **总结：**
 
