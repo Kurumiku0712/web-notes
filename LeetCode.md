@@ -188,3 +188,64 @@ var index = arr.indexOf(666); // 根据元素值查找索引，时间复杂度 O
 ```
 
 `splice()` 语法  array.splice(start, deleteCount, item1, item2, ...)
+
+
+
+# 链表(链式存储)
+
+数组（顺序存储）的底层原理，说白了就是一块连续的内存空间，有了这块内存空间的首地址，就能直接通过索引计算出任意位置的元素地址。
+
+链表不一样，一条链表并不需要一整块连续的内存空间存储元素。链表的元素可以分散在内存空间的天涯海角，通过每个节点上的 `next, prev` 指针，将零散的内存块串联起来形成一个链式结构。可以提高内存的利用效率.
+
+数组最大的优势是支持通过索引快速访问元素，而链表就不支持。
+
+工具函数
+
+```js
+var ListNode = function(x) {
+    this.val = x;
+    this.next = null;
+};
+
+// 输入一个数组，转换为一条单链表
+var createLinkedList = function(arr) {
+    if (arr == null || arr.length == 0) {
+        return null;
+    }
+    var head = new ListNode(arr[0]);
+    var cur = head;
+    for (var i = 1; i < arr.length; i++) {
+        cur.next = new ListNode(arr[i]);
+        cur = cur.next;
+    }
+    return head;
+}
+```
+
+```js
+// 创建一条单链表
+let head = createLinkedList([1, 2, 3, 4, 5]);
+
+// 遍历单链表
+for (let p = head; p != null; p = p.next) {
+    console.log(p.val);
+}
+```
+
+```js
+// 创建一条单链表
+var head = createLinkedList([1, 2, 3, 4, 5]);
+
+// 在单链表尾部插入一个新节点 6
+var p = head;
+// 先走到链表的最后一个节点
+while (p.next !== null) {
+    p = p.next;
+}
+// 现在 p 就是链表的最后一个节点
+// 在 p 后面插入新节点
+p.next = new ListNode(6);
+
+// 现在链表变成了 1 -> 2 -> 3 -> 4 -> 5 -> 6
+```
+
