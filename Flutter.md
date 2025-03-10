@@ -51,6 +51,18 @@ type `flutter`       Select **Flutter: New Project**.
 
 locate the Flutter SDK on your computer
 
+运行 Run -> Run without debugging, 右下角切换运行平台
+
+
+
+5 Add Android as a target platform for Flutter from Windows start
+
+(1) Install Android Studio
+
+
+
+
+
 
 
 # My First Flutter App
