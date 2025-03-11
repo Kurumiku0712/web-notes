@@ -47,3 +47,27 @@ delete pre ones
 add three
 
 ![image-20250311142124612](D:\Notes\web-notes\assets\image-20250311142124612.png)
+
+
+
+setup with php files
+
+after coding
+
+![image-20250311145258447](D:\Notes\web-notes\assets\image-20250311145258447.png) 
+
+
+
+Permalink Settings -> Post name
+
+settings -> reading -> home 
+
+
+
+## Header
+
+UAE
+
+
+
+![image-20250311173312854](D:\Notes\web-notes\assets\image-20250311173312854.png)
