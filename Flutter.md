@@ -55,7 +55,11 @@ locate the Flutter SDK on your computer
 
 
 
-5 Add Android as a target platform for Flutter from Windows start
+5 重要：系统启用开发者模式
+
+
+
+6 Add Android as a target platform for Flutter from Windows start
 
 (1) Install Android Studio
 
