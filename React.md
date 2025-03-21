@@ -223,18 +223,33 @@ const Counter = () => {
 export default Counter;
 ```
 
+除了是否手动 DOM 操作代码多， 页面变得复杂时的代码可维护性，还有一点显著区别
 
+| 概念     | 命令式（Imperative）                 | 声明式（Declarative）                |
+| -------- | ------------------------------------ | ------------------------------------ |
+| 思维方式 | **告诉计算机怎么做**（步骤一步步写） | **告诉计算机目标是什么**（结果描述） |
+| 例子     | 手动更新 DOM                         | 根据状态自动更新 UI                  |
+| 难度     | 更低级别，更灵活，但代码多           | 更抽象，代码简洁易维护               |
+| 代表     | Vanilla JS                           | React / Vue 等现代框架               |
 
+**Vanilla JS**：每次点击按钮，我们需要手动告诉浏览器 “把这个元素的 textContent 改掉”
 
-
-
+**React**：我们只说 “setCount 使得 count 改变了”，React 自动知道要重新渲染 `<h1>` 内容（这就是声明式的魅力）
 
 
 
 ## What is Vanilla JavaScript and how does it compare to using frameworks like React?
 
-三个点：DOM，构建复杂页面时的可维护性，声明式编程和命令式编程
+三个点：虚拟 DOM，基于组件构建复杂页面时的可维护性，声明式编程
 
 JavaScript is good for small projects, we need to manipulate **DOM** (Document Object Model) manually using something like **document.getElementById**. React is **comopent-based** and uses **virtual DOM**, it is more suitable for complex web applications and easier to maintain compared to JavaScript.
 
 ## What is the difference between declarative and imperative programming, especially in the context of React?
+
+In **imperative** programming, like Vanilla JS, **you have to manually tell the browser how to update the DOM step by step**.
+
+In **declarative **programming, like React, **you just describe what the UI should look like (`<h1>{count}</h1>`), and React takes care of updating the virtual DOM automatically**.
+This makes the code more **readable**, **maintainable**, and **less error-prone**. (prone: 易于)
+
+Declarative code is especially powerful when working with complex UIs or state changes, because **it abstracts away the DOM manipulation logic**.
+
