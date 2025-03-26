@@ -27,7 +27,7 @@
 {
   let arr = [1, 2, 3, 4, 5];
   arr.forEach((e, i, arr) => {
-    console.log(e);
+    console.log(`index: ${i} value: ${e} from ${arr}`)
   });
   console.log("------------------");
 }
