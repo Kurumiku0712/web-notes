@@ -8,7 +8,7 @@
 
 2 Recommended
 
-The Flutter team recommends installing [Visual Studio Code](https://code.visualstudio.com/docs/setup/windows) 1.86 or later and the [Flutter extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter). This combination simplifies installing the Flutter SDK.
+The Flutter team recommends installing [Visual Studio Code](https://code.visualstudio.com/docs/setup/windows) 1.86 or later and the [Flutter extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter). This combination simplifies installing the Flutter SDK. 或者用 IDEA 安装 flutter 插件，并配置好 flutter 里面的 Dart SDK 路径
 
 Flutter, Dart, 以及更多方便开发的插件
 
@@ -65,7 +65,11 @@ locate the Flutter SDK on your computer
 
 
 
-
+```
+flutter clean
+flutter pub get
+flutter run
+```
 
 
 
